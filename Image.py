@@ -109,18 +109,26 @@ class Image:
 		fimgR.write(rtmp)
 		fimgR.close()
 
-		print
-		print " End of extraction" 
-		print " Extract ramdisk.gz manually!!!!"
-	
-
 #		#TODO: Implement extraction!!!
 #	
-#		## create boot.img-ramdisk directory 
-#		self.ramdiskdir = self.bwd + '/boot.img-ramdisk'
-#		if not os.path.exists(self.ramdiskdir):
-#			os.makedirs(self.ramdiskdir)
-#		else: os.system('rm -R ' + self.ramdiskdir + '/* 2> /dev/null')
+		## create boot.img-ramdisk directory 
+		self.ramdiskdir = self.bwd + '/boot.img-ramdisk'
+		if not os.path.exists(self.ramdiskdir):
+			os.makedirs(self.ramdiskdir)
+		else: os.system('rm -R ' + self.ramdiskdir + '/* 2> /dev/null')
+
+		err1 = os.system('gzip -dc ' + self.bwd + '/boot.img-ramdisk.gz  > ' + self.ramdiskdir + '/boot.img-ramdisk.cpio')	
+		if err1:
+			print " Error: Failed to extract gzip from boot.img-ramdisk"
+			return False
+		err2 = os.system('rm ' + self.bwd + '/boot.img-ramdisk.gz')
+		if err2:
+			print " Error: Failed to remove boot.img-ramdisk.gz"
+			return False
+		err3 = os.system('cd ' + self.ramdiskdir + ' &&  cpio -id < ' + self.ramdiskdir + '/boot.img-ramdisk.cpio')
+		if err3:
+			print "Error: Failed to extract boot.img-ramdisk.cpio"
+			return False
 
 
 		#################################################

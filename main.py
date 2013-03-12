@@ -42,6 +42,16 @@ def askForFile(cwd,prompt="Enter file path: ",compliant="Error: File not availab
 # Start application
 ########################################################
 
+
+#########################3
+# Settings while Dev:
+
+H.set_img('myboot', H.cwd+'testdata/SGH-I747')
+
+
+#######################################################
+
+
 menuPoints = [	'load new boot.img',
 		'show boot.img info',
 		'show boot.img details',
