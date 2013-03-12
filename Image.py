@@ -47,14 +47,33 @@ class Image:
 		print "Size:	",self.size
 		print
 		print "Header attributes: "
-		for item in self.header:
-			if ( item[-4:] == 'ADDR'):
-				print '{0:15}	:	{1:1}'.format( item, hex(self.header[item]))  
-			elif(item[-4:] == 'SIZE'):
-				print  '{0:15}	:	{1:1}'.format( item, str(self.header[item]) + ' bytes')  
-			else:
-				print  '{0:15}	:	{1:1}'.format( item, self.header[item])  
+		print 
+		print '{0:15} : {1:1}'.format("MAGIC" , self.header["MAGIC"])
 		print
+		print '{0:15} : {1:1}'.format("KERNEL_SIZE" , str(self.header["KERNEL_SIZE"]) + ' bytes')
+		print '{0:15} : {1:1}'.format("KERNEL_ADDR" , hex(self.header["KERNEL_ADDR"]))
+		print
+		print '{0:15} : {1:1}'.format("RAMDISK_SIZE" , str(self.header["RAMDISK_SIZE"])+' bytes')
+		print '{0:15} : {1:1}'.format("RAMDISK_ADDR" , hex(self.header["RAMDISK_ADDR"]))
+		print
+		print '{0:15} : {1:1}'.format("SECOND_SIZE" , str(self.header["SECOND_SIZE"])+' bytes')
+		print '{0:15} : {1:1}'.format("SECOND_ADDR" , hex(self.header["SECOND_ADDR"]))
+		print
+		print '{0:15} : {1:1}'.format("TAGS_ADDR" , hex(self.header["TAGS_ADDR"]))
+		print '{0:15} : {1:1}'.format("PAGE_SIZE" , str(self.header["PAGE_SIZE"]))
+		print
+		print '{0:15} : {1:1}'.format("CMD_LINE" , self.header["CMD_LINE"])
+		print
+		print
+
+#		for item in self.header:
+#			if ( item[-4:] == 'ADDR'):
+#				print '{0:15}	:	{1:1}'.format( item, hex(self.header[item]))  
+#			elif(item[-4:] == 'SIZE'):
+#				print  '{0:15}	:	{1:1}'.format( item, str(self.header[item]) + ' bytes')  
+#			else:
+#				print  '{0:15}	:	{1:1}'.format( item, self.header[item])  
+#		print
 
 	
 	def __check_size(self):
@@ -129,13 +148,60 @@ class Image:
 		if err3:
 			print "Error: Failed to extract boot.img-ramdisk.cpio"
 			return False
+		err4 = os.system('rm ' + self.ramdiskdir + '/boot.img-ramdisk.cpio')
+		if err4:
+			print "Error: Failed to remove boot.img-ramdisk.cpio"
+			return False 
 
 
 		#################################################
 
 
 	def pack_img(self,bwd):
-		print "Start packing boot.img..."
+		print "Start packing boot.img..."		
+
+		err1 = os.system('resources/mkbootfs ' + self.ramdiskdir + ' | gzip > ' + self.ramdiskdir + '.gz')
+		if err1:
+			print "Error: Failed to create ramdiskdir.gz"
+			return False
+
+		vkernel= self.bwd + '/boot.img-kernel'
+		print vkernel
+		vramdisk= self.ramdiskdir + '.gz'
+		print vramdisk
+
+		cmdl=self.header["CMD_LINE"]
+		cmdl=cmdl.strip("\x00")
+		cmdl=repr(cmdl)
+		print cmdl
+		print len(cmdl)
+		#TODO: FIX command line!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		vbase=hex(self.header["KERNEL_ADDR"])
+		vbase=vbase[0:-1]
+		print vbase
+	
+		vpagesz=str(self.header["PAGE_SIZE"])
+		print vpagesz
+	
+		vramdiskaddr=hex(self.header["RAMDISK_ADDR"])
+		vramdiskaddr = vramdiskaddr[0:-1]
+		print vramdiskaddr
+
+		out=self.bwd + '/newboot.img'
+		print out		
+
+		print  'resources/mkbootimg --kernel ' + vkernel + ' --ramdisk ' + vramdisk + ' --cmdline ' + cmdl + ' --base ' + vbase + ' --pagesize ' + vpagesz + ' --ramdiskaddr ' + vramdiskaddr + ' -o ' + out
+
+
+		err2 = os.system('resources/mkbootimg --kernel ' + vkernel  + ' --ramdisk ' + vramdisk + ' --cmdline ' + cmdl + ' --base ' + vbase + ' --pagesize ' + vpagesz + ' --ramdiskaddr ' + vramdiskaddr + ' -o ' + out)
+
+
+		if err2:
+			print "Error: Failed to create new boot.img"
+
+
+			
 		#TODO: Implement packing algorithm
 		print "End of packing boot.img"
 	
