@@ -160,39 +160,55 @@ class Image:
 	def pack_img(self,bwd):
 		print "Start packing boot.img..."		
 
+		err0 = os.system('chmod a+x resources/mk*')
+		if err0:
+			print "Error: Failed to change mkbootfs and mkbootimg to executable"
+			return False
+
 		err1 = os.system('resources/mkbootfs ' + self.ramdiskdir + ' | gzip > ' + self.ramdiskdir + '.gz')
 		if err1:
 			print "Error: Failed to create ramdiskdir.gz"
 			return False
 
 		vkernel= self.bwd + '/boot.img-kernel'
-		print vkernel
+		#print vkernel
 		vramdisk= self.ramdiskdir + '.gz'
-		print vramdisk
+		#print vramdisk
 
 		cmdl=self.header["CMD_LINE"]
 		cmdl=cmdl.strip("\x00")
 		cmdl=repr(cmdl)
+		print
+		print "Kernel command line:"
 		print cmdl
-		print len(cmdl)
-		#TODO: FIX command line!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		vbase=hex(self.header["KERNEL_ADDR"])
 		vbase=vbase[0:-1]
+		print
+		print "Kernel address:"
 		print vbase
 	
 		vpagesz=str(self.header["PAGE_SIZE"])
+		print
+		print "Page Size:"
 		print vpagesz
 	
 		vramdiskaddr=hex(self.header["RAMDISK_ADDR"])
 		vramdiskaddr = vramdiskaddr[0:-1]
+		print
+		print "Ramdisk addr: "
 		print vramdiskaddr
 
 		out=self.bwd + '/newboot.img'
+		print
+		print "Output: "
 		print out		
 
+		print " mkbootimg Command line: "
+		print 
 		print  'resources/mkbootimg --kernel ' + vkernel + ' --ramdisk ' + vramdisk + ' --cmdline ' + cmdl + ' --base ' + vbase + ' --pagesize ' + vpagesz + ' --ramdiskaddr ' + vramdiskaddr + ' -o ' + out
-
+		print
+		print 
 
 		err2 = os.system('resources/mkbootimg --kernel ' + vkernel  + ' --ramdisk ' + vramdisk + ' --cmdline ' + cmdl + ' --base ' + vbase + ' --pagesize ' + vpagesz + ' --ramdiskaddr ' + vramdiskaddr + ' -o ' + out)
 
@@ -200,6 +216,7 @@ class Image:
 		if err2:
 			print "Error: Failed to create new boot.img"
 
+		os.system('rm ' + vramdisk)
 
 			
 		#TODO: Implement packing algorithm

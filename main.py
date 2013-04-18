@@ -46,7 +46,7 @@ def askForFile(cwd,prompt="Enter file path: ",compliant="Error: File not availab
 #########################3
 # Settings while Dev:
 
-H.set_img('myboot', H.cwd+'testdata/SGH-I747')
+H.set_img('myboot', H.cwd+'testdata/boot.img-test')
 
 
 #######################################################
@@ -97,4 +97,4 @@ while True:
 		print "Leaving application..."
 		break;
 			 
-
+os.system('pyclean ./')

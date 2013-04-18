@@ -1,21 +1,30 @@
-Marc Vettiger - 12.03.2013
+###############################################
+#
+#	boot.img-Utility
+#
+#	Author: 	Marc Vettiger
+#	Latest update:	18.04.2013
+#
+###############################################
 
-Purpose:
-+ boot.img-Utility is able to extract, modify and repack Android boot images.
+About:
+
+boot.img-Utility is able to extract, modify and repack Android boot images.
+boot images containe a kernel and a ramdisk file system
 
 
 Log:
-It is finally possible to repack your extracted boot.img. The repacking option is not implemented well, since the two C binary files are needed. Also a lot of security checks before repacking are not implemented yet in the application. 
-
++It is finally possible to repack your extracted boot.img. The repacking option is not implemented well, since the two C binary files are needed. Also a lot of security checks before repacking are not implemented yet in the application. 
 + Better "show info" design implemented of option 2.  
 
+18.04.2013 - log
++ mkbootimg and mkbootfs are automatically changed to executables by os.system("chmod a+x resources/mk*")
++ boot.img-ramdisk.gz is deleted after repacking
++ pyclean is executed to clean up at exit()
 
-Outview:
-+ Implement checks before repacking boot.img 
 
+TODO:
++ move Image.py and BootHandle.py to resource folder 
 
-HOWTO: 
-Make sure the two binaries mkbootfs and mkbootimg are executable. Otherwise:
-# chmod a+x mkbootfs mkbootimg
 
 
