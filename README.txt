@@ -2,7 +2,6 @@
 #
 #	boot.img-Utility
 #
-#	Author: 	Marc Vettiger
 #	Latest update:	18.04.2013
 #
 ###############################################
